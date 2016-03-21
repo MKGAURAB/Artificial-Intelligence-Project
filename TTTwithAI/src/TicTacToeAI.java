@@ -59,9 +59,12 @@ public class TicTacToeAI {
     "pos" < 0 - O move
     
      */
-    private void put(long pos) {
-        X = X | pos & -((pos >> 31) + 1) & ~O;
-        O = O | -pos & (pos >> 31) & ~X;
+    private void put(int pos, int player) {
+        if (player == 1) {
+            X = X | (1 << (pos - 1));
+        } else {
+            O = O | (1 << (pos - 1));
+        }
     }
 
     /* -==-=-=-=- clear method -==-=-=-=-=-=-=-=-=-=-=-
@@ -70,9 +73,12 @@ public class TicTacToeAI {
     sign doesn't matter.   
 
      */
-    private void clear(long pos) {
-        X = X & ~pos;
-        O = O & ~pos;
+    private void clear(int pos, int player) {
+        if (player == 1) {
+            X = X ^ (1 << (pos - 1));
+        } else {
+            O = O ^ (1 << (pos - 1));
+        }
     }
 
     /* -==-=-=-=- check method -==-=-=-=-=-=-=-=-=-=-=-	
@@ -115,7 +121,7 @@ public class TicTacToeAI {
 	
      */
     private boolean Check(long P) {
-        return (P & 0x0007) == 0x0007
+        return ((P & 0x0007) == 0x0007
                 || (P & 0x000E) == 0x000E
                 || (P & 0x0070) == 0x0070
                 || (P & 0x00E0) == 0x00E0
@@ -138,7 +144,7 @@ public class TicTacToeAI {
                 || (P & 0x1240) == 0x1240
                 || (P & 0x0248) == 0x0248
                 || (P & 0x2480) == 0x2480
-                || (P & 0x0124) == 0x0124;
+                || (P & 0x0124) == 0x0124);
     }
 
     /* -==-=-=-=- check method -==-=-=-=-=-=-=-=-=-=-=-
@@ -150,50 +156,49 @@ public class TicTacToeAI {
 	
      */
     private int GameOver() {
-        return Check(X) ? 262144 : Check(O) ? 65536 : ((X | O) & 65535) == 65535 ? 131072 : 0;
+        return Check(X) ? 1 : Check(O) ? -1 : ((X | O) & 65535) == 65535 ? 2 : 0;
     }
 
-    /* -==-=-=-=- MiniMax method -==-=-=-=-=-=-=-=-=-=-=-
-    
-    best_value (binary)
-
-          BEST SCORE                    BEST MOVE 
-          524288 262144  65536 | 256 128 64  32  16   8   4   2   1
-            0    0    0  |  0   0   0   0   0   0   0   0   0
-            |    |    |     
-   Winner   X    0    O
-   
-       
-    best_value & 0xffff0000 - clear move bit (get score bits)
-    
-    Worst "best_value" for X - 512 (O wins)
-    Worst "best_value" for O - 2048 (X wins)
+    /* -==-=-=-=- MiniMax method -==-=-=-=-=-=-=-=-=-=-=-             
+    Worst "best_value" for X - 65536 (O wins)
+    Worst "best_value" for O - 262144 (X wins)
 
      */
-    private long MiniMax(long p, int depth) {
-        //System.out.println("I am in Minimax : " + p);
-        if (depth >=3) {
-            return p;
-        }
+    private long MiniMaxAB(int p, int depth, long alpha, long beta) {
         long End = GameOver();
         if (End != 0) {
             return End;
         }
-
-        long best_value = (p == 1) ? 65536 : 262144;
-        for (long b = 1; b <= 32768; b = b << 1) {
-            long move = (~getBoard() & b);
-            if (move != 0) {
-                put(p * move);
-                long s = MiniMax(-p, depth + 1);
-                best_value = p * (s & 0xffff0000) > p
-                        * (best_value & 0xffff0000) ? ((s & 0xffff0000) | move)
-                                : best_value;
-                clear(move);
-            }
-
+        if (depth <= 0) {
+            return End;
         }
-        return best_value;
+        if (p == 1) {
+            for (int i = 1; i <= 15; i++) {
+                long move = ((~(X | O)) & (1 << (i - 1)));
+                if (move != 0) {
+                    put(i, p);
+                    long val = MiniMaxAB(-1 * p, depth - 1, alpha, beta);
+                    if (val < beta) {
+                        beta = val;
+                    }
+                    clear(i, p);
+                }
+            }
+            return beta;
+        } else {
+            for (int i = 1; i <= 15; i++) {
+                long move = ((~(X | O)) & (1 << (i - 1)));
+                if (move != 0) {
+                    put(i, p);
+                    long val = MiniMaxAB(-1 * p, depth - 1, alpha, beta);
+                    if (val > alpha) {
+                        alpha = val;
+                    }
+                    clear(i, p);
+                }
+            }
+            return alpha;
+        }
     }
 
     /* -==-=-=-=- PosToBit/BitToPos method -==-=-=-=-=-=-=-=-=-=-=-
@@ -224,10 +229,9 @@ public class TicTacToeAI {
     pos in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
 
      */
-    public boolean Move(long pos, int player) {
-        long p = PosToBit(pos);
-        if (p != 0 && (player == 1 || player == -1) && ((X | O) & p) == 0) {
-            put(p * player);
+    public boolean Move(int pos, int player) {
+        if (pos != 0 && (player == 1 || player == -1) && ((X | O) & (1 << (pos - 1))) == 0) {
+            put(pos, player);
             return true;
         } else {
             return false;
@@ -239,10 +243,21 @@ public class TicTacToeAI {
      */
     public int GenerateMove(int Player) {
 
-        long got = (MiniMax(Player, 0) & 65535);
-        long bb = getBoard();
-        System.out.println("Here I got : " + Long.toBinaryString(got) + " but " + Long.toBinaryString(getBoard()));
-        return BitToPos(got);
+        long MAXM = -10;
+        int pos = 0;
+        for (int i = 1; i <= 15; i++) {
+            long move = ((~(X | O)) & (1 << (i - 1)));
+            if (move != 0) {
+                //put(i, Player);
+                long val = MiniMaxAB(Player, 2, -10, 10);
+                if (val > MAXM) {
+                    MAXM = val;
+                    pos = i;
+                }
+                //clear(i, Player);
+            }
+        }
+        return pos;
     }
 
 // -==-=-=-=- getX -==-=-=-=-=-=-=-=-=-=-=- 	

@@ -433,7 +433,6 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void ComputerMove(int player, Color pcolor, int move) {
-        System.out.println("Just in my Thinking!");
         if (move == 0) {
             move = TTT.isGameOver() == 0 ? TTT.GenerateMove(player) : 0;
         }
