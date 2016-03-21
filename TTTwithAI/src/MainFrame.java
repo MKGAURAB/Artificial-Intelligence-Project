@@ -16,6 +16,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -200,6 +202,11 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         BTNAIvsAI.setText("AI vs AI");
+        BTNAIvsAI.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                BTNAIvsAIMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -262,11 +269,61 @@ public class MainFrame extends javax.swing.JFrame {
 
         TTT.NewGame();
     }//GEN-LAST:event_NewGameMouseClicked
+    private void AIvsAI() {
+        int p = 1;
+        int GO = 0;
+        P1.setText("");
+        P2.setText("");
+        P3.setText("");
+        P4.setText("");
+        P5.setText("");
+        P6.setText("");
+        P7.setText("");
+        P8.setText("");
+        P9.setText("");
 
+        TTT.NewGame();
+        Random rnd = new Random();
+        int FirstMove = rnd.nextInt(9) + 1;
+        ComputerMove(1, Color.GREEN, FirstMove);
+        while (GO == 0) {
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if ((p % 2) == 0) {
+                ComputerMove(1, Color.GREEN, 0);
+            } else {
+                ComputerMove(-1, Color.RED, 0);
+
+            }
+            BoardPanel.repaint();
+            BoardPanel.revalidate();
+            this.repaint();
+            this.revalidate();
+            GO = TTT.isGameOver();
+            p++;
+        }
+        SetCounters(GO);
+
+    }
     private void BTNResetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BTNResetMouseClicked
         // TODO add your handling code here:
         SetCounters(0);
     }//GEN-LAST:event_BTNResetMouseClicked
+
+    private void BTNAIvsAIMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BTNAIvsAIMouseClicked
+        // TODO add your handling code here:
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                AIvsAI();//To change body of generated methods, choose Tools | Templates.
+            }
+        };
+        Thread T = new Thread(runnable);
+        T.start();
+    }//GEN-LAST:event_BTNAIvsAIMouseClicked
 
     /**
      * @param args the command line arguments
@@ -282,16 +339,24 @@ public class MainFrame extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -323,6 +388,7 @@ public class MainFrame extends javax.swing.JFrame {
         LebelXwins.setText("X wins: " + XWins + "");
         LebelOwins.setText("O wins: " + OWins + "");
         LebelDraws.setText("Draws : " + Draws + "");
+
     }
 
     class LabelAdapter extends MouseAdapter {
@@ -343,9 +409,6 @@ public class MainFrame extends javax.swing.JFrame {
                     SetCounters(GO);
                 }
             }
-            System.out.println("X board: " + Long.toBinaryString(TTT.getX()));
-            System.out.println("O board: " + Long.toBinaryString(TTT.getO()));
-            System.out.println("Got Board: "+Long.toBinaryString(TTT.getBoard()));
         }
     }
 
