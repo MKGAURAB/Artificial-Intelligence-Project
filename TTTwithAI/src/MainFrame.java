@@ -88,7 +88,7 @@ public class MainFrame extends javax.swing.JFrame {
         P4.setForeground(Color.GREEN);
         P4.setFont(new Font("Tahoma", Font.BOLD, 49));
         P4.setBackground(Color.BLACK);
-        P4.setBounds(208, 10, 64, 64);
+        P4.setBounds(10, 76, 64, 64);
         BoardPanel.add(P4);
 
         P5 = new JLabelBox();
@@ -99,7 +99,7 @@ public class MainFrame extends javax.swing.JFrame {
         P5.setForeground(Color.GREEN);
         P5.setFont(new Font("Tahoma", Font.BOLD, 49));
         P5.setBackground(Color.BLACK);
-        P5.setBounds(10, 76, 64, 64);
+        P5.setBounds(76, 76, 64, 64);
         BoardPanel.add(P5);
 
         P6 = new JLabelBox();
@@ -110,7 +110,7 @@ public class MainFrame extends javax.swing.JFrame {
         P6.setForeground(Color.GREEN);
         P6.setFont(new Font("Tahoma", Font.BOLD, 49));
         P6.setBackground(Color.BLACK);
-        P6.setBounds(76, 76, 64, 64);
+        P6.setBounds(142, 76, 64, 64);
         BoardPanel.add(P6);
 
         P7 = new JLabelBox();
@@ -121,7 +121,7 @@ public class MainFrame extends javax.swing.JFrame {
         P7.setForeground(Color.GREEN);
         P7.setFont(new Font("Tahoma", Font.BOLD, 49));
         P7.setBackground(Color.BLACK);
-        P7.setBounds(142, 76, 64, 64);
+        P7.setBounds(10, 142, 64, 64);
         BoardPanel.add(P7);
 
         P8 = new JLabelBox();
@@ -132,7 +132,7 @@ public class MainFrame extends javax.swing.JFrame {
         P8.setForeground(Color.GREEN);
         P8.setFont(new Font("Tahoma", Font.BOLD, 49));
         P8.setBackground(Color.BLACK);
-        P8.setBounds(208, 76, 64, 64);
+        P8.setBounds(76, 142, 64, 64);
         BoardPanel.add(P8);
 
         P9 = new JLabelBox();
@@ -143,85 +143,8 @@ public class MainFrame extends javax.swing.JFrame {
         P9.setForeground(Color.GREEN);
         P9.setFont(new Font("Tahoma", Font.BOLD, 49));
         P9.setBackground(Color.BLACK);
-        P9.setBounds(10, 142, 64, 64);
+        P9.setBounds(142, 142, 64, 64);
         BoardPanel.add(P9);
-
-        P10 = new JLabelBox();
-        P10.Field = 10;
-        P10.addMouseListener(new LabelAdapter(P10));
-        P10.setOpaque(true);
-        P10.setHorizontalAlignment(SwingConstants.CENTER);
-        P10.setForeground(Color.GREEN);
-        P10.setFont(new Font("Tahoma", Font.BOLD, 49));
-        P10.setBackground(Color.BLACK);
-        P10.setBounds(76, 142, 64, 64);
-        BoardPanel.add(P10);
-
-        P11 = new JLabelBox();
-        P11.Field = 11;
-        P11.addMouseListener(new LabelAdapter(P11));
-        P11.setOpaque(true);
-        P11.setHorizontalAlignment(SwingConstants.CENTER);
-        P11.setForeground(Color.GREEN);
-        P11.setFont(new Font("Tahoma", Font.BOLD, 49));
-        P11.setBackground(Color.BLACK);
-        P11.setBounds(142, 142, 64, 64);
-        BoardPanel.add(P11);
-
-        P12 = new JLabelBox();
-        P12.Field = 12;
-        P12.addMouseListener(new LabelAdapter(P12));
-        P12.setOpaque(true);
-        P12.setHorizontalAlignment(SwingConstants.CENTER);
-        P12.setForeground(Color.GREEN);
-        P12.setFont(new Font("Tahoma", Font.BOLD, 49));
-        P12.setBackground(Color.BLACK);
-        P12.setBounds(208, 142, 64, 64);
-        BoardPanel.add(P12);
-
-        P13 = new JLabelBox();
-        P13.Field = 13;
-        P13.addMouseListener(new LabelAdapter(P13));
-        P13.setOpaque(true);
-        P13.setHorizontalAlignment(SwingConstants.CENTER);
-        P13.setForeground(Color.GREEN);
-        P13.setFont(new Font("Tahoma", Font.BOLD, 49));
-        P13.setBackground(Color.BLACK);
-        P13.setBounds(10, 208, 64, 64);
-        BoardPanel.add(P13);
-
-        P14 = new JLabelBox();
-        P14.Field = 14;
-        P14.addMouseListener(new LabelAdapter(P14));
-        P14.setOpaque(true);
-        P14.setHorizontalAlignment(SwingConstants.CENTER);
-        P14.setForeground(Color.GREEN);
-        P14.setFont(new Font("Tahoma", Font.BOLD, 49));
-        P14.setBackground(Color.BLACK);
-        P14.setBounds(76, 208, 64, 64);
-        BoardPanel.add(P14);
-
-        P15 = new JLabelBox();
-        P15.Field = 15;
-        P15.addMouseListener(new LabelAdapter(P15));
-        P15.setOpaque(true);
-        P15.setHorizontalAlignment(SwingConstants.CENTER);
-        P15.setForeground(Color.GREEN);
-        P15.setFont(new Font("Tahoma", Font.BOLD, 49));
-        P15.setBackground(Color.BLACK);
-        P15.setBounds(142, 208, 64, 64);
-        BoardPanel.add(P15);
-
-        P16 = new JLabelBox();
-        P16.Field = 16;
-        P16.addMouseListener(new LabelAdapter(P16));
-        P16.setOpaque(true);
-        P16.setHorizontalAlignment(SwingConstants.CENTER);
-        P16.setForeground(Color.GREEN);
-        P16.setFont(new Font("Tahoma", Font.BOLD, 49));
-        P16.setBackground(Color.BLACK);
-        P16.setBounds(208, 208, 64, 64);
-        BoardPanel.add(P16);
 
     }
 
@@ -336,13 +259,7 @@ public class MainFrame extends javax.swing.JFrame {
         P7.setText("");
         P8.setText("");
         P9.setText("");
-        P10.setText("");
-        P11.setText("");
-        P12.setText("");
-        P13.setText("");
-        P14.setText("");
-        P15.setText("");
-        P16.setText("");
+
         TTT.NewGame();
     }//GEN-LAST:event_NewGameMouseClicked
 
@@ -482,41 +399,6 @@ public class MainFrame extends javax.swing.JFrame {
             case 9:
                 P9.setForeground(pcolor);
                 P9.setText(PText);
-                TTT.Move(move, player);
-                break;
-            case 10:
-                P10.setForeground(pcolor);
-                P10.setText(PText);
-                TTT.Move(move, player);
-                break;
-            case 11:
-                P11.setForeground(pcolor);
-                P11.setText(PText);
-                TTT.Move(move, player);
-                break;
-            case 12:
-                P12.setForeground(pcolor);
-                P12.setText(PText);
-                TTT.Move(move, player);
-                break;
-            case 13:
-                P13.setForeground(pcolor);
-                P13.setText(PText);
-                TTT.Move(move, player);
-                break;
-            case 14:
-                P14.setForeground(pcolor);
-                P14.setText(PText);
-                TTT.Move(move, player);
-                break;
-            case 15:
-                P15.setForeground(pcolor);
-                P15.setText(PText);
-                TTT.Move(move, player);
-                break;
-            case 16:
-                P16.setForeground(pcolor);
-                P16.setText(PText);
                 TTT.Move(move, player);
                 break;
         }

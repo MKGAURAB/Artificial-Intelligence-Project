@@ -1,8 +1,9 @@
 /*
       title: TicTacToe AI-ENGINE 
-     author: Kris Cieslak
-       date: 03.09.2012
-    license: http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US
+     author: Md. Khairullah Gaurab
+       date: 19.03.2016
+    website: 
+    license: Free to USE
    language: java
    
    description: 
@@ -15,7 +16,7 @@
     private void clear(int pos)
     private boolean Check(int P)
     private int GameOver()
-    private int NegaMax(int p)
+    private int MiniMax(int p)
     private int PosToBit(int pos)
     private int BitToPos(int bitNum)
     
@@ -32,13 +33,11 @@ public class TicTacToeAI {
 
     /*
    BOARD (int) :
-   00001|00002|00004|00008
-   -----+-----+-----+-----
-   00016|00032|00064|00128
-   -----+-----+-----+-----
-   00256|00512|01024|02048
-   -----+-----+-----+-----
-   04096|08192|16348|32768
+   001|002|004
+   ---+---+---
+   008|016|032
+   ---+---+---
+   064|128|256
    
    X - only player X (1) positions
    O - only player O (-1) positions
@@ -46,7 +45,7 @@ public class TicTacToeAI {
    X | O = Board
   
      */
-    private long X = 0, O = 0;
+    private int X = 0, O = 0;
 
     /*  -==-=-=-=- put method -==-=-=-=-=-=-=-=-=-=-=-
   
@@ -59,12 +58,9 @@ public class TicTacToeAI {
     "pos" < 0 - O move
     
      */
-    private void put(int pos, int player) {
-        if (player == 1) {
-            X = X | (1 << (pos - 1));
-        } else {
-            O = O | (1 << (pos - 1));
-        }
+    private void put(int pos) {
+        X = X | pos & -((pos >> 31) + 1) & ~O;
+        O = O | -pos & (pos >> 31) & ~X;
     }
 
     /* -==-=-=-=- clear method -==-=-=-=-=-=-=-=-=-=-=-
@@ -73,12 +69,9 @@ public class TicTacToeAI {
     sign doesn't matter.   
 
      */
-    private void clear(int pos, int player) {
-        if (player == 1) {
-            X = X ^ (1 << (pos - 1));
-        } else {
-            O = O ^ (1 << (pos - 1));
-        }
+    private void clear(int pos) {
+        X = X & ~pos;
+        O = O & ~pos;
     }
 
     /* -==-=-=-=- check method -==-=-=-=-=-=-=-=-=-=-=-	
@@ -86,65 +79,25 @@ public class TicTacToeAI {
    P - X or Y (not 1/-1) (look at the GameOver method)
  
    Winning bits:
-         Row 1 - 0000000000000111 = 0x0007
-         Row 1 - 0000000000001110 = 0x000E
-         
-         Row 2 - 0000000001110000 = 0x0070
-         Row 2 - 0000000011100000 = 0x00E0
-        
-         Row 3 - 0000011100000000 = 0x0700
-         Row 3 - 0000111000000000 = 0x0E00
-        
-         Row 4 - 0111000000000000 = 0x7000
-         Row 4 - 1110000000000000 = 0xE000
-        
-         Col 1 - 0001000100010000 = 0x1110
-         Col 1 - 0000 0001 0001 0001 = 0x0111
-        
-         Col 2 - 0010 0010 0010 0000 = 0x2220
-         Col 2 - 0000 0010 0010 0010 = 0x0222
-        
-         Col 3 - 0100 0100 0100 0000 = 0x4440
-         Col 3 - 0000 0100 0100 0100 = 0x0444
-         
-         Col 4 - 1000 1000 1000 0000 = 0x8880
-         Col 4 - 0000 1000 1000 1000 = 0x0888
-         
-         Diagonal 1 - 1000 0100 0010 0000 =0x8420
-         Diagonal 2 - 0000 0100 0010 0001 =0x0421
-         Diagonal 3 - 0000 1000 0100 0010 =0x0842
-         Diagonal 3 - 0100 0010 0001 0000 =0x4210
-         Diagonal 4 - 0001 0010 0100 0000 =0x1240
-         Diagonal 4 - 0000 0010 0100 1000 =0x0248
-         Diagonal 5 - 0010 0100 1000 1000 =0x2480
-         Diagonal 5 - 0000 0001 0010 0100 =0x0124
+         Row 1 - 000000111 = 0x007                 
+         Row 2 - 000111000 = 0x038 (0x007 << 3)
+         Row 3 - 111000000 = 0x1C0 (0x007 << 6)
+         Col 1 - 001001001 = 0x049 
+         Col 2 - 010010010 = 0x092 (0x049 << 1)
+         Col 3 - 100100100 = 0x124 (0x049 << 2)
+    Diagonal 1 - 100010001 = 0x111
+    Diagonal 2 - 001010100 = 0x054 
 	
      */
-    private boolean Check(long P) {
-        return ((P & 0x0007) == 0x0007
-                || (P & 0x000E) == 0x000E
-                || (P & 0x0070) == 0x0070
-                || (P & 0x00E0) == 0x00E0
-                || (P & 0x0700) == 0x0700
-                || (P & 0x0E00) == 0x0E00
-                || (P & 0x7000) == 0x7000
-                || (P & 0xE000) == 0xE000
-                || (P & 0x1110) == 0x1110
-                || (P & 0x0111) == 0x0111
-                || (P & 0x2220) == 0x2220
-                || (P & 0x0222) == 0x0222
-                || (P & 0x4440) == 0x4440
-                || (P & 0x0444) == 0x0444
-                || (P & 0x8880) == 0x8880
-                || (P & 0x0888) == 0x0888
-                || (P & 0x8420) == 0x8420
-                || (P & 0x0421) == 0x0421
-                || (P & 0x0842) == 0x0842
-                || (P & 0x4210) == 0x4210
-                || (P & 0x1240) == 0x1240
-                || (P & 0x0248) == 0x0248
-                || (P & 0x2480) == 0x2480
-                || (P & 0x0124) == 0x0124);
+    private boolean Check(int P) {
+        return (P & 0x007) == 7
+                || (P & 0x038) == 0x038
+                || (P & 0x1C0) == 0x1C0
+                || (P & 0x049) == 0x49
+                || (P & 0x092) == 0x92
+                || (P & 0x124) == 0x124
+                || (P & 0x111) == 0x111
+                || (P & 0x054) == 0x54;
     }
 
     /* -==-=-=-=- check method -==-=-=-=-=-=-=-=-=-=-=-
@@ -156,64 +109,61 @@ public class TicTacToeAI {
 	
      */
     private int GameOver() {
-        return Check(X) ? 1 : Check(O) ? -1 : ((X | O) & 65535) == 65535 ? 2 : 0;
+        return Check(X) ? 2048 : Check(O) ? 512 : ((X | O) & 511) == 511 ? 1024 : 0;
     }
 
-    /* -==-=-=-=- MiniMax method -==-=-=-=-=-=-=-=-=-=-=-             
-    Worst "best_value" for X - 65536 (O wins)
-    Worst "best_value" for O - 262144 (X wins)
+    /* -==-=-=-=- NegaMax method -==-=-=-=-=-=-=-=-=-=-=-
+    
+    best_value (binary)
+
+          BEST SCORE                    BEST MOVE 
+          2048 1024  512 | 256 128 64  32  16   8   4   2   1
+            0    0    0  |  0   0   0   0   0   0   0   0   0
+            |    |    |     
+   Winner   X    0    O
+   
+       
+    best_value & 0xfffffe00 - clear move bit (get score bits)
+    
+    Worst "best_value" for X - 512 (O wins)
+    Worst "best_value" for O - 2048 (X wins)
 
      */
-    private long MiniMaxAB(int p, int depth, long alpha, long beta) {
-        long End = GameOver();
+    private int MiniMax(int p) {
+        int End = GameOver();
         if (End != 0) {
             return End;
         }
-        if (depth <= 0) {
-            return End;
-        }
-        if (p == 1) {
-            for (int i = 1; i <= 15; i++) {
-                long move = ((~(X | O)) & (1 << (i - 1)));
-                if (move != 0) {
-                    put(i, p);
-                    long val = MiniMaxAB(-1 * p, depth - 1, alpha, beta);
-                    if (val < beta) {
-                        beta = val;
-                    }
-                    clear(i, p);
-                }
+
+        int best_value = (p == 1) ? 512 : 2048;
+        for (int b = 1; b <= 256; b = b << 1) {
+            int move = (~(X | O) & b);
+            if (move != 0) {
+                put(p * move);
+                int s = MiniMax(-p);
+                best_value = p * (s & 0xfffffe00) > p
+                        * (best_value & 0xfffffe00) ? ((s & 0xfffffe00) | move)
+                                : best_value;
+                clear(move);
             }
-            return beta;
-        } else {
-            for (int i = 1; i <= 15; i++) {
-                long move = ((~(X | O)) & (1 << (i - 1)));
-                if (move != 0) {
-                    put(i, p);
-                    long val = MiniMaxAB(-1 * p, depth - 1, alpha, beta);
-                    if (val > alpha) {
-                        alpha = val;
-                    }
-                    clear(i, p);
-                }
-            }
-            return alpha;
+
         }
+        return best_value;
     }
 
     /* -==-=-=-=- PosToBit/BitToPos method -==-=-=-=-=-=-=-=-=-=-=-
    
-    Standard field numeration (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)  
+    Standard field numeration (1,2,3,4,5,6,7,8,9)  
     bit position (1,2,4,8,16,32,64,128,256)
 	
      */
-    private long PosToBit(long pos) {
-        return (pos >= 1 && pos <= 16) ? ((long) 1 << (long) (pos - 1)) : 0;
+    private int PosToBit(int pos) {
+        return pos >= 1 && pos <= 9 ? 1 << (pos - 1) : 0;
     }
 
-    private int BitToPos(long bitNum) {
+    private int BitToPos(int bitNum) {
         int result = 1;
-        while ((bitNum = (bitNum >> (long) 1)) > 0) {
+        while ((bitNum = bitNum >> 1) > 0) {
             result++;
         }
         return result;
@@ -226,12 +176,13 @@ public class TicTacToeAI {
  /* -==-=-=-=- Move method -==-=-=-=-=-=-=-=-=-=-=-
     
     player -  1 or -1
-    pos in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+    pos in [1,2,3,4,5,6,7,8,9]
 
      */
     public boolean Move(int pos, int player) {
-        if (pos != 0 && (player == 1 || player == -1) && ((X | O) & (1 << (pos - 1))) == 0) {
-            put(pos, player);
+        int p = PosToBit(pos);
+        if (p != 0 && (player == 1 || player == -1) && ((X | O) & p) == 0) {
+            put(p * player);
             return true;
         } else {
             return false;
@@ -242,36 +193,21 @@ public class TicTacToeAI {
       Opponent = 1, -1
      */
     public int GenerateMove(int Player) {
-
-        long MAXM = -10;
-        int pos = 0;
-        for (int i = 1; i <= 15; i++) {
-            long move = ((~(X | O)) & (1 << (i - 1)));
-            if (move != 0) {
-                //put(i, Player);
-                long val = MiniMaxAB(Player, 2, -10, 10);
-                if (val > MAXM) {
-                    MAXM = val;
-                    pos = i;
-                }
-                //clear(i, Player);
-            }
-        }
-        return pos;
+        return BitToPos((MiniMax(Player) & 511));
     }
 
 // -==-=-=-=- getX -==-=-=-=-=-=-=-=-=-=-=- 	
-    public long getX() {
+    public int getX() {
         return X;
     }
 
 // -==-=-=-=- getO -==-=-=-=-=-=-=-=-=-=-=-	
-    public long getO() {
+    public int getO() {
         return O;
     }
 
 // -==-=-=-=- getBoard -==-=-=-=-=-=-=-=-=-=-=-
-    public long getBoard() {
+    public int getBoard() {
         return (X | O);
     }
 
@@ -287,6 +223,6 @@ public class TicTacToeAI {
      */
 // -==-=-=-=-= isGameOver =-=-=-=-=-=-=-=-=-=-=-=-=-
     public int isGameOver() {
-        return Check(X) ? 1 : Check(O) ? -1 : ((X | O) & 65535) == 65535 ? 2 : 0;
+        return Check(X) ? 1 : Check(O) ? -1 : ((X | O) & 511) == 511 ? 2 : 0;
     }
 }
